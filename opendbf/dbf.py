@@ -5,8 +5,12 @@ from field import Field
 from header import Header
 
 
-def read_dbf(file_path: str, csv_path: str):
-
+def dbf_to_csv(file_path: str) -> str:
+    """
+    Read a dbf file and write the result to a csv file with the same name in the same directory.
+    :param file_path: path to the dbf file.
+    :return: path to the csv file
+    """
     with open(file_path, "rb") as file:
 
         # read header
@@ -21,6 +25,7 @@ def read_dbf(file_path: str, csv_path: str):
 
         field_name = [field.field_name for field in field_list]
 
+        csv_path = file_path.replace('.dbf', '.csv')
         with open(csv_path, "w+", newline="") as csv_file:
             csv_writer = writer(csv_file, delimiter=",", quoting=QUOTE_MINIMAL)
 
@@ -30,13 +35,16 @@ def read_dbf(file_path: str, csv_path: str):
                 record = []
                 for field in field_list:
 
-                    if file.peek(1)[:1] in [b"", b"\r", b"\n"]:
+                    if file.peek(1)[:1] in [b"\r", b"\n"]:
                         file.seek(2, SEEK_CUR)
 
                     data = file.read(field.field_length)
+                    data = data.strip()
                     try:
-                        record.append(data.strip().decode())
+                        data = data.decode('utf-8')
                     except UnicodeDecodeError:
-                        record.append(data.strip().decode("ISO-8859-1"))
-                file.seek(1, SEEK_CUR)
+                        data = data.decode('ISO-8859-1')
+                    record.append(data)
                 csv_writer.writerow(record)
+                file.seek(1, SEEK_CUR)
+    return csv_path

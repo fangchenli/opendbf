@@ -11,12 +11,15 @@ setuptools.setup(
     description="A pure python dbf file reader.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/VirosaLi/opendbf",
     packages=setuptools.find_packages(),
     classifiers=[
+        'Development Status :: 1 - Planning',
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: BSD-3-Clause",
+        'Typing :: Typed',
+        'License :: OSI Approved :: BSD License',
         "Operating System :: OS Independent",
+        'Natural Language :: English',
     ],
     python_requires=">=3.7",
 )
