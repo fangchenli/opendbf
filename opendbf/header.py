@@ -1,7 +1,7 @@
 from datetime import date
 from struct import Struct
 
-from codepage import code_page_map
+from opendbf.codepage import code_page_map
 
 dbf_file_type_map = {
     0x2: "FoxBASE",
@@ -26,12 +26,12 @@ class Header(Struct):
         super().__init__(self.fmt)
         data = file.read(self.size)
         data_tuple = self.unpack(data)
-        self.file_type = dbf_file_type_map[int(hex(data_tuple[0]), 16)]
+        self.file_type = dbf_file_type_map[data_tuple[0]]
         self.date = date(data_tuple[1] + 1900, data_tuple[2], data_tuple[3])
         self.num_records, self.header_length, self.record_length = [
             data_tuple[i] for i in (4, 5, 6)
         ]
-        self.encoding = code_page_map[int(hex(data_tuple[-2]), 16)]
+        self.encoding = code_page_map[data_tuple[-2]]
 
     def __repr__(self):
         return (

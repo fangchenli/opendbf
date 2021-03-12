@@ -31,17 +31,17 @@ field_flag_map = {
 class Field(Struct):
     def __init__(self, file):
 
-        self.fmt = "=11scLBBBLB8s"
+        self.fmt = "<11scLBBBLB8s"
         super().__init__(self.fmt)
         data = file.read(self.size)
         data_tuple = self.unpack(data)
-        self.field_name = data_tuple[0].decode()
+        self.field_name = data_tuple[0].decode().replace("\0", "")
         self.field_type = field_type_map[data_tuple[1].decode()]
         self.displacement, self.field_length, self.num_decimal, self.field_flag = [
             data_tuple[i] for i in (2, 3, 4, 5)
         ]
         if self.field_flag:
-            self.field_flag = field_flag_map[int(hex(data_tuple[5]), 16)]
+            self.field_flag = field_flag_map[data_tuple[5]]
 
     def __repr__(self):
         return (

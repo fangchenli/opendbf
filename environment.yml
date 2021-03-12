@@ -7,5 +7,9 @@ dependencies:
   - python=3.8
 
   # linting
-  - isort>=5.0.5
-  - black>=19.10b0
+  - isort
+  - black
+
+  # testing
+  - pandas
+  - pytest
