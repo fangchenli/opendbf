@@ -1,3 +1,4 @@
+from io import BufferedReader
 from struct import Struct
 
 field_type_map = {
@@ -29,14 +30,14 @@ field_flag_map = {
 
 
 class Field(Struct):
-    def __init__(self, file):
+    def __init__(self, file: BufferedReader, encoding: str):
 
         self.fmt = "<11scLBBBLB8s"
         super().__init__(self.fmt)
         data = file.read(self.size)
         data_tuple = self.unpack(data)
-        self.field_name = data_tuple[0].decode().replace("\0", "")
-        self.field_type = field_type_map[data_tuple[1].decode()]
+        self.field_name = data_tuple[0].decode(encoding).replace("\0", "")
+        self.field_type = field_type_map[data_tuple[1].decode(encoding)]
         self.displacement, self.field_length, self.num_decimal, self.field_flag = [
             data_tuple[i] for i in (2, 3, 4, 5)
         ]

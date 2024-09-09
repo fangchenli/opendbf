@@ -22,7 +22,7 @@ def dbf_to_csv(file_path: str | PathLike) -> Path:
 
             header = Header(file)
             num_fields = (header.header_length - header.size - 1) // header.size
-            field_list = [Field(file) for _ in range(num_fields)]
+            field_list = [Field(file, header.encoding) for _ in range(num_fields)]
             field_name = [field.field_name for field in field_list]
             csv_writer.writerow(field_name)
 
@@ -35,10 +35,7 @@ def dbf_to_csv(file_path: str | PathLike) -> Path:
 
                     data_bytes = file.read(field.field_length)
                     data_bytes = data_bytes.strip()
-                    try:
-                        data_str = data_bytes.decode("utf-8")
-                    except UnicodeDecodeError:
-                        data_str = data_bytes.decode("ISO-8859-1")
+                    data_str = data_bytes.decode(header.encoding)
                     record.append(data_str)
                 csv_writer.writerow(record)
                 file.seek(1, SEEK_CUR)

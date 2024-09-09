@@ -1,9 +1,14 @@
 from datetime import date
+from io import BufferedReader
 from struct import Struct
 
-from opendbf.codepage import code_page_map
+# source: http://shapelib.maptools.org/codepage.html
+# {ID: (Codepage, Description)}
+code_page_map: dict[int, tuple[str, str]] = {0x57: ("Current ANSI CP", "ANSI")}
 
-dbf_file_type_map = {
+encoding_map = {"ANSI": "cp1252"}
+
+dbf_file_type_map: dict[int, str] = {
     0x2: "FoxBASE",
     0x3: "FoxBASE+/Dbase III plus, no memory",
     0x30: "Visual FoxPro",
@@ -21,7 +26,7 @@ dbf_file_type_map = {
 
 
 class Header(Struct):
-    def __init__(self, file):
+    def __init__(self, file: BufferedReader):
         self.fmt = "=BBBBLHH16sBBH"
         super().__init__(self.fmt)
         data = file.read(self.size)
@@ -31,12 +36,12 @@ class Header(Struct):
         self.num_records, self.header_length, self.record_length = [
             data_tuple[i] for i in (4, 5, 6)
         ]
-        self.encoding = code_page_map[data_tuple[-2]]
+        self.encoding = encoding_map.get(code_page_map[data_tuple[-2]][1], "utf-8")
 
     def __repr__(self):
         return (
             f"File Type: {self.file_type}\n"
             f"Last Modified: {self.date}\n"
             f"Number of Records: {self.num_records}\n"
-            f"Encoding: {self.encoding[1]}\n"
+            f"Encoding: {self.encoding}\n"
         )
