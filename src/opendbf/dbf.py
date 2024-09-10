@@ -14,11 +14,10 @@ def dbf_to_csv(file_path: str | PathLike) -> Path:
     assert file_path.is_file(), f"Not a file: {file_path}."
     assert file_path.suffix == ".dbf", f"Not a dbf file: {file_path}."
 
-    csv_path = file_path.with_suffix(".csv")
     with open(file_path, "rb") as file:
         header = Header(file)
-        assert file.read(2) == b"\r ", "Header terminator not found."
 
+        csv_path = file_path.with_suffix(".csv")
         with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
             csv_writer = writer(csv_file, delimiter=",", quoting=QUOTE_MINIMAL)
             csv_writer.writerow(header.field_name)

@@ -44,6 +44,7 @@ class Header(Struct):
             Field(file, self.encoding) for _ in range(self.num_fields)
         ]
         self.field_name: list[str] = [field.field_name for field in self.field_list]
+        assert file.read(2) == b"\r ", "Header terminator not present."
 
     def __repr__(self):
         return (
