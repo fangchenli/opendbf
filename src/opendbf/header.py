@@ -2,6 +2,8 @@ from datetime import date
 from io import BufferedReader
 from struct import Struct
 
+from opendbf.field import Field
+
 # source: http://shapelib.maptools.org/codepage.html
 # {ID: (Codepage, Description)}
 code_page_map: dict[int, tuple[str, str]] = {0x57: ("Current ANSI CP", "ANSI")}
@@ -36,7 +38,12 @@ class Header(Struct):
         self.num_records, self.header_length, self.record_length = [
             data_tuple[i] for i in (4, 5, 6)
         ]
-        self.encoding = encoding_map.get(code_page_map[data_tuple[-2]][1], "utf-8")
+        self.encoding: str = encoding_map.get(code_page_map[data_tuple[-2]][1], "utf-8")
+        self.num_fields: int = (self.header_length - self.size - 1) // self.size
+        self.field_list: list[Field] = [
+            Field(file, self.encoding) for _ in range(self.num_fields)
+        ]
+        self.field_name: list[str] = [field.field_name for field in self.field_list]
 
     def __repr__(self):
         return (
