@@ -25,7 +25,7 @@ def dbf_to_csv(file_path: str | PathLike) -> Path:
             for _ in range(header.num_records):
                 record = []
                 for field in header.field_list:
-                    data_bytes = file.read(field.field_length)
+                    data_bytes = file.read(field.length)
                     data_bytes = data_bytes.strip()
                     data_str = data_bytes.decode(header.encoding)
                     record.append(data_str)

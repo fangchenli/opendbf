@@ -1,7 +1,7 @@
 from io import BufferedReader
 from struct import Struct
 
-field_type_map = {
+type_map = {
     "C": "Character",
     "Y": "Currency",
     "N": "Numeric",
@@ -20,7 +20,7 @@ field_type_map = {
     "V": "Varchar type (Visual Foxpro)",
 }
 
-field_flag_map = {
+flag_map = {
     0x01: "System Column (not visible to user)",
     0x02: "Column can store null values",
     0x04: "Binary column (for CHAR and MEMO only)",
@@ -36,18 +36,18 @@ class Field(Struct):
         super().__init__(self.fmt)
         data = file.read(self.size)
         data_tuple = self.unpack(data)
-        self.field_name = data_tuple[0].decode(encoding).replace("\0", "")
-        self.field_type = field_type_map[data_tuple[1].decode(encoding)]
-        self.displacement, self.field_length, self.num_decimal, self.field_flag = [
+        self.name = data_tuple[0].decode(encoding).replace("\0", "")
+        self.type = type_map[data_tuple[1].decode(encoding)]
+        self.displacement, self.length, self.num_decimal, self.flag = [
             data_tuple[i] for i in (2, 3, 4, 5)
         ]
-        if self.field_flag:
-            self.field_flag = field_flag_map[data_tuple[5]]
+        if self.flag:
+            self.flag = flag_map[data_tuple[5]]
 
     def __repr__(self):
         return (
-            f"Field Name: {self.field_name}\n"
-            f"Field Type: {self.field_type}\n"
-            f"Field Length: {self.field_length}\n"
-            f"Field Flag : {self.field_flag}\n"
+            f"Field Name: {self.name}\n"
+            f"Field Type: {self.type}\n"
+            f"Field Length: {self.length}\n"
+            f"Field Flag : {self.flag}\n"
         )
