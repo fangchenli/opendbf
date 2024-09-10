@@ -31,10 +31,10 @@ class Header(Struct):
     def __init__(self, file: BufferedReader):
         self.fmt = "=BBBBLHH16sBBH"
         super().__init__(self.fmt)
-        data = file.read(self.size)
+        data: bytes = file.read(self.size)
         data_tuple = self.unpack(data)
-        self.file_type = dbf_file_type_map[data_tuple[0]]
-        self.date = date(data_tuple[1] + 1900, data_tuple[2], data_tuple[3])
+        self.file_type: str = dbf_file_type_map[data_tuple[0]]
+        self.date: date = date(data_tuple[1] + 1900, data_tuple[2], data_tuple[3])
         self.num_records, self.header_length, self.record_length = [
             data_tuple[i] for i in (4, 5, 6)
         ]
