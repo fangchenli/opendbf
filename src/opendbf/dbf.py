@@ -17,15 +17,15 @@ def dbf_to_csv(file_path: str | PathLike) -> Path:
 
     csv_path = file_path.with_suffix(".csv")
     with open(file_path, "rb") as file:
+        header = Header(file)
+        num_fields = (header.header_length - header.size - 1) // header.size
+        field_list = [Field(file, header.encoding) for _ in range(num_fields)]
+        field_name = [field.field_name for field in field_list]
+
         with open(csv_path, "w", newline="", encoding="utf-8") as csv_file:
             csv_writer = writer(csv_file, delimiter=",", quoting=QUOTE_MINIMAL)
-
-            header = Header(file)
-            num_fields = (header.header_length - header.size - 1) // header.size
-            field_list = [Field(file, header.encoding) for _ in range(num_fields)]
-            field_name = [field.field_name for field in field_list]
             csv_writer.writerow(field_name)
-
+            
             for _ in range(header.num_records):
                 record = []
                 for field in field_list:
